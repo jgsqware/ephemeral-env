@@ -1,0 +1,10 @@
+---
+- hosts: all
+  roles:
+    - role: docker
+      docker_daemon_config:
+        hosts:
+          - "tcp://0.0.0.0:2375"
+          - "fd://"
+    - role: swarm
+    - role: portainer

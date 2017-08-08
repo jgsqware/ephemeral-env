@@ -1,5 +1,5 @@
 deploy:
   tags:
-    - docker
+    - shell
   script:
-    - docker -H tcp://10.21.90.116:2375 ps -a
+    - vagrant version
