@@ -1,7 +1,6 @@
 - name: "Wait Docker is started"
-  service:
-    name: docker
-    state: started
+  pause:
+    seconds: 60
 
 - name: "Is in Swarm mode"
   command: 'docker node ls'

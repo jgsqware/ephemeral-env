@@ -1,5 +1,8 @@
-deploy:
+test:
   tags:
     - vagrant
   script:
-    - vagrant version
+    - cd debian-box && vagrant up --provision
+    - docker -H tcp://localhost:2375 service ls
+    - cd debian-box && vagrant destroy -f
+    
