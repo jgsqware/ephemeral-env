@@ -3,6 +3,7 @@ test:
     - vagrant
   script:
     - cd debian-box && vagrant up --provision
-    - docker -H tcp://localhost:2375 service ls
-    - cd debian-box && vagrant destroy -f
+    - docker -H tcp://localhost:2375 node ls 
+    - docker -H tcp://localhost:2375 service ls | grep portainer || { echo "portainer service should be available"; false; }
+    - vagrant destroy -f
     
