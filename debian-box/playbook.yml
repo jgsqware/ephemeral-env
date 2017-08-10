@@ -7,4 +7,5 @@
           - "tcp://0.0.0.0:2375"
           - "fd://"
     - role: swarm
+    - role: traefik
     - role: portainer

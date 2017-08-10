@@ -1,0 +1,38 @@
+- name: "Cluster already created"
+  command: "kubectl cluster-info dump"
+  ignore_errors: true
+  register: "k8s_status"
+
+- name: "Init cluster"
+  command: "kubeadm init --pod-network-cidr=192.168.0.0/16"
+  become: true
+  when: "k8s_status.rc!=0"
+
+- name: "Retrieve cluster token"
+  shell: "kubeadm token list | grep 'kubeadm init' | awk '{print $1}'"
+  register: "token_result"
+  become: true
+
+- set_fact:
+    cluster_master_token: "{{token_result.stdout}}"
+
+- name: "Create .kube directory"
+  file:
+    path: "{{user_home}}/.kube"
+    state: directory
+
+- name: "Copy kubernetes configuration"
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "{{user_home}}/.kube/config"
+    owner: "{{user_uid}}"
+    group: "{{user_gid}}"
+    remote_src: yes
+  become: true
+
+- name: "Install Pod network [Calico]"
+  command: "kubectl apply -f http://docs.projectcalico.org/v2.4/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+  when: "k8s_status.rc!=0"
+
+#TODO: Find a way to test pods are running
+

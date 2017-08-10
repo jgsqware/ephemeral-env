@@ -1,0 +1,21 @@
+---
+- hosts: all
+  pre_tasks:
+    - name: "Gather uid and gid"
+      getent:
+        database: passwd
+        key: "{{ansible_ssh_user}}"
+    - set_fact:
+        user_uid: "{{getent_passwd[ansible_ssh_user][1]}}"
+        user_gid: "{{getent_passwd[ansible_ssh_user][2]}}"
+        user_home: "{{ansible_env.HOME}}"
+
+  roles:
+    - role: docker
+      docker_daemon_config:
+        hosts:
+          - "tcp://0.0.0.0:2375"
+          - "fd://"
+    - role: kubeadm
+    - role: k8s-master
+    - role: single-node

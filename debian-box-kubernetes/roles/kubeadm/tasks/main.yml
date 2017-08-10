@@ -1,0 +1,44 @@
+- name: "get Stable version"
+  uri:
+    url: "https://storage.googleapis.com/kubernetes-release/release/stable.txt"
+    return_content: yes
+  register: k8s_stable_version
+
+- name: "Download kubectl"
+  get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{k8s_stable_version.content | replace('\n', '')}}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: 0755
+  become: true
+
+- name: "Install prerequesite"
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+  with_items:
+    - "apt-transport-https"
+  become: true
+
+- name: "Add GPG key"
+  apt_key:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    state: present
+  become: true
+
+- name: "Add APT repository"
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+  become: true
+
+- name: "Install Kubeadm"
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+  with_items:
+    - kubelet 
+    - kubeadm
+  become: true
+  

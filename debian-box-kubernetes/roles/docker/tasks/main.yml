@@ -1,0 +1,71 @@
+- name: "Install prerequesite"
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+  with_items:
+    - "apt-transport-https"
+    - "ca-certificates"
+    - "curl"
+    - "gnupg2"
+    - "software-properties-common"
+  become: true
+
+- name: "Add GPG key"
+  apt_key:
+    url: "https://download.docker.com/linux/debian/gpg"
+    state: present
+  become: true
+
+- name: "Add APT repository"
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian jessie stable"
+    state: present
+  become: true
+
+- name: "Install Docker CE"
+  apt:
+    name: "docker-ce"
+    state: present
+    update_cache: true
+  become: true
+
+- name: "Add user in docker group"
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+  become: true
+
+- name: "Create docker.service.d folder"
+  file:
+    path: "/etc/systemd/system/docker.service.d"
+    state: directory
+    mode: 0755
+  become: true
+
+- name: "Override Systemd config"
+  copy:
+    src: "{{ role_path }}/files/override.conf"
+    dest: "/etc/systemd/system/docker.service.d/override.conf"
+  become: true
+
+- name: "Reload Systemd Daemon"
+  systemd:
+    name: docker
+    daemon_reload: yes
+  become: true
+
+- name: Configure Docker daemon (variables)
+  copy:
+    content: "{{ docker_daemon_config | to_nice_json }}"
+    dest: /etc/docker/daemon.json
+    force: yes
+  become: true
+  when: docker_daemon_config is defined
+
+- name: restart docker
+  service:
+    name: docker
+    state: restarted
+  become: true

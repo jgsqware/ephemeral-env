@@ -3,13 +3,6 @@ test:
     - vagrant
   script:
     - cd debian-box && vagrant up --provision
-    - docker -H tcp://localhost:2375 node ls 
-    - docker -H tcp://localhost:2375 service ls | grep portainer || { echo "portainer service should be available"; false; }
+    - docker -H tcp://${SWARM_HOST}:2375 node ls 
+    - docker -H tcp://${SWARM_HOST}:2375 service ls | grep portainer || { echo "portainer service should be available"; false; }
     - vagrant destroy -f
-
-    
-test-tag:
-  tags:
-    - docker
-  script:
-    ping lam-812

@@ -1,0 +1,2 @@
+- name: "Allow scheduling on master"
+  command: "kubectl taint nodes --all node-role.kubernetes.io/master-"

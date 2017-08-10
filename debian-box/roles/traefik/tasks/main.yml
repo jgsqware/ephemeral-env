@@ -1,0 +1,16 @@
+- name: "Copy Traefik Docker stack file"
+  copy:
+    src: "{{ role_path }}/files/docker-stack.yml"
+    dest: "/tmp/traefik-docker-stack.yml"
+
+- name: "Is Traefik running"
+  command: 'docker service ps traefik'
+  register: "traefik_status"
+  ignore_errors: true
+
+- name: "Start Traefik service"
+  command: "docker stack deploy --compose-file /tmp/traefik-docker-stack.yml traefik"
+  when: "traefik_status.rc == 1"
+
+- name: "Start Traefik service"
+  command: "docker network ls"

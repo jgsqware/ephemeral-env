@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - traefik-net
+    command: ["--docker" ,"--docker.swarmmode" ,"--docker.domain=lam-812.lampiris.local" ,"--docker.watch" ,"--web","--logLevel=DEBUG"]
+    deploy:
+      placement:
+        constraints: [node.role == manager] 
+
+networks:
+  traefik-net:
