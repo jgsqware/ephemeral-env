@@ -11,6 +11,12 @@
     mode: 0755
   become: true
 
+- name: "Set autocompletion for kubectl"
+  lineinfile:
+    path: "{{user_home}}/.bashrc"
+    regexp: '^source.*kubectl'
+    line: 'source <(kubectl completion bash)'
+
 - name: "Install prerequesite"
   apt:
     name: "{{item}}"

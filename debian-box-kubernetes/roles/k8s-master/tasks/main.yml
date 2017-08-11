@@ -1,3 +1,7 @@
+- name: "Wait Docker is started"
+  pause:
+    seconds: 30
+    
 - name: "Cluster already created"
   command: "kubectl cluster-info dump"
   ignore_errors: true

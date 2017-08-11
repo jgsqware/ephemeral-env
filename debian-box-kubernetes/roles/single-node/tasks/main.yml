@@ -1,2 +1,8 @@
+- name: "Is master tainted"
+  shell: "kubectl get nodes -o jsonpath='{.items[*].spec.taints[0].key}' | grep master"
+  ignore_errors: true
+  register: k8s_tainted_master_status
+
 - name: "Allow scheduling on master"
   command: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+  when: "k8s_tainted_master_status.rc == 0"

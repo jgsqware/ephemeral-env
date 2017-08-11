@@ -1,0 +1,13 @@
+- name: "Copy kube-dashboard.yml"
+  copy:
+    src: "{{role_path}}/files/kube-dashboard.yml"
+    dest: "/tmp/kube-dashboard.yml"
+
+- name: "Is Kubernetes dashboard present"
+  shell: "kubectl get pods --all-namespaces | grep dashboard"
+  register: "k8s_dashboard_status"
+  ignore_errors: true
+
+- name: "Run Kubernetes Dashboard"
+  command: "kubectl create -f /tmp/kube-dashboard.yml"
+  when: "k8s_dashboard_status.rc!=0"

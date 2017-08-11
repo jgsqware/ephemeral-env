@@ -19,3 +19,4 @@
     - role: kubeadm
     - role: k8s-master
     - role: single-node
+    - role: dashboard
